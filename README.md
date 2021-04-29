@@ -18,8 +18,8 @@ Está funcionando conforme o planejado?
 
 O monitoramento de sistemas distribuídos é um dos princípios básicos do conjunto de práticas conhecido como engenharia de confiabilidade de site (SRE).
 
-Este primeiro de uma série de postagens sobre as técnicas do Traefik e SRE explora como os recursos de registro integrados do Traefik podem ajudar a fornecer a visibilidade necessária. 
-Quando combinado com o conjunto de projetos de código aberto conhecido como Elastic Stack - incluindo Elasticsearch, Kibana e Filebeat, entre outros 
+Este primeiro de uma série de postagens sobre as técnicas do Traefik e SRE explora como os recursos de registro integrados do Traefik podem ajudar a fornecer a visibilidade necessária.
+Quando combinado com o conjunto de projetos de código aberto conhecido como Elastic Stack - incluindo Elasticsearch, Kibana e Filebeat, entre outros.
 
 - o Traefik torna-se parte de um rico conjunto de ferramentas para análise e visualização de log de rede.
 
