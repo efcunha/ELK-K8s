@@ -312,7 +312,7 @@ O Traefik também gerou tempos médios de duração para todas as solicitações
 
 Tente arrastar e soltar o campo "Duração" em seu gráfico e selecionar "Gráfico de Barras" como seu tipo de gráfico:
 
-Captura de tela do gráfico de barras Kibana mostrando a duração média da solicitação 
+<img width="1000" alt="dashboard-avg-times" src="https://user-images.githubusercontent.com/52961166/116613158-596ac700-a906-11eb-8f51-52b43b4948d7.png">
 
 # Resumo:
 
