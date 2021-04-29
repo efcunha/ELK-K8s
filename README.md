@@ -222,26 +222,24 @@ Primeiro, abra o menu com três linhas no canto superior esquerdo da tela e esco
 
 Defina o padrão de índice nomeado filebeat-**para corresponder aos filebeatíndices:
 
-kibana-define-index
 <img width="1000" alt="kibana-define-index" src="https://user-images.githubusercontent.com/52961166/116611264-29222900-a904-11eb-85a7-10b1fc6ffc40.png">
 
 Clique em "Próxima etapa" e selecione @timestamp ![Uploading kibana-define-index.png…]()
 como o campo de hora principal no menu suspenso:
 
 Captura de tela da criação de um padrão de índice em Kibana
-<img width="1000" alt="kibana-create-index" src="https://user-images.githubusercontent.com/52961166/116610787-98e3e400-a903-11eb-95d4-f9576df252c6.png">
+<img width="1000" alt="kibana-define-index-timestamp" src="https://user-images.githubusercontent.com/52961166/116611423-58d13100-a904-11eb-937b-a6ac2372aec5.png">
 
 Ao clicar em "Criar padrão de índice", a página de resumo do índice mostrará os campos atualizados. Você poderá usar estes campos em consultas Kibana na página do painel:
 
 Captura de tela da página de resumo do padrão de índice Kibana
-<img width="1000" alt="kibana-define-index-timestamp" src="https://user-images.githubusercontent.com/52961166/116610888-b4e78580-a903-11eb-83ba-cff956ab3a22.png">
+<img width="1000" alt="kibana-index-summary" src="https://user-images.githubusercontent.com/52961166/116611475-671f4d00-a904-11eb-838b-bf66a30ce3fe.png">
 
 Agora, se você clicar no menu com três linhas no canto superior esquerdo da tela e escolher Kibana > Discover, deverá ver um gráfico preliminar de todos os logs ingeridos.
 
 Para restringi-los apenas aos úteis, escolha "Adicionar filtro", entre kubernetes.pod.nameno menu suspenso Campo, escolha "é" no menu suspenso Operador e selecione o traefiknome do pod apropriado no menu suspenso "Valor" para veja apenas as entradas de registro criadas por ele:
 
-Captura de tela da página Kibana Discover
-<img width="1000" alt="kibana-index-summary" src="https://user-images.githubusercontent.com/52961166/116610971-cf216380-a903-11eb-99d1-2743b70c8ec9.png">
+<img width="1000" alt="kibana-logs" src="https://user-images.githubusercontent.com/52961166/116611523-7605ff80-a904-11eb-99af-09bd7384f4c8.png">
 
 Nesse estágio, no entanto, se você expandir qualquer campo de mensagem determinado (clicando na seta à esquerda de seu carimbo de data / hora), verá que a entrada de registro JSON é armazenada como um único item message, o que não serve ao propósito de analisar logs do Traefik.
 
@@ -275,7 +273,7 @@ NOTES:
 Agora, os logs no Kibana projetarão cada campo JSON como um campo de consulta separado. 
 Mas ainda há um problema! Você notará triângulos amarelos ao lado dos campos e, ao passar o cursor sobre eles, verá uma mensagem de aviso de que "Não existe mapeamento de cache para o campo":
 
-Captura de tela dos campos do Traefik em Kibana
+<img width="1000" alt="kibana-traefik-fields" src="https://user-images.githubusercontent.com/52961166/116611598-8f0eb080-a904-11eb-9992-068a58e7d268.png">
 
 Para corrigir isso, volte para filebeat-**
 a página 
@@ -284,7 +282,7 @@ a página
 
 No canto superior esquerdo, ao lado do ícone de lata de lixo vermelho, há um ícone de atualização. Clique nele para atualizar a lista de campos.
 
-Captura de tela de atualização da lista de campos Kibana
+<img width="1000" alt="kibana-refresh-index" src="https://user-images.githubusercontent.com/52961166/116611654-a057bd00-a904-11eb-8c85-4d0c8ad8cce6.png">
 
 Como você verá quando retornar à Kibana > Discoverpágina, agora todos os campos de registro gerados pelo Traefik estão disponíveis em Kibana para consulta.
 
@@ -303,7 +301,7 @@ Para gerar um gráfico do detalhamento da carga geral da solicitação, navegue 
 
 A partir daí, encontre o campo "RequestPath" nas seleções à esquerda e arraste-o para o quadrado no meio da tela. Escolha "Donut" como estilo de gráfico no menu suspenso e você verá um gráfico parecido com este:
 
-Captura de tela de um gráfico Kibana mostrando todas as solicitações
+<img width="1000" alt="dashboard-all-requests" src="https://user-images.githubusercontent.com/52961166/116611784-c0877c00-a904-11eb-8c84-5c29dad51a8d.png">
 
 Este gráfico mostra todas as solicitações tratadas pelo Traefik. Se quiser restringi-lo, você pode adicionar filtros. 
 
@@ -312,7 +310,7 @@ Em seguida, escolha "RequestHost", selecione "é" como sua operadora, filtre htt
 
 Agora seu gráfico será parecido com este:
 
-Captura de tela dos resultados do Kibana apenas para HTTPBin
+<img width="1000" alt="dashboard-httpbin" src="https://user-images.githubusercontent.com/52961166/116611935-ef055700-a904-11eb-9d04-1e68d62d2405.png">
 
 O Traefik também gerou tempos médios de duração para todas as solicitações atendidas pelo aplicativo HttpBin. 
 
