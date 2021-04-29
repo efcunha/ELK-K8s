@@ -155,17 +155,19 @@ deployment.apps/httpbin created
 service/httpbin created
 ingressroute.traefik.containo.us/httpbin created
 ```
-Depois que os pods são criados, você pode acessar o aplicativo com seu navegador em httpbin.localhoste tentar algumas solicitações:
+Depois que os pods são criados, você pode acessar o aplicativo com seu navegador em httpbin.localhost e tentar algumas solicitações:
 
 <img width="1000" alt="httpbin" src="https://user-images.githubusercontent.com/52961166/116609821-d431e300-a902-11eb-8a30-e36afd52a933.png">
 
 # Conecte Traefik e Kibana
 
-Agora é hora de vincular Traefik e Kibana para que você possa interpretar os registros do Traefik de uma forma significativa. Nessas próximas etapas, você configurará os dois aplicativos para extrair as informações que deseja do Traefik e prepará-las para visualizar como gráficos Kibana.
+Agora é hora de vincular Traefik e Kibana para que você possa interpretar os registros do Traefik de uma forma significativa. 
+Nessas próximas etapas, você configurará os dois aplicativos para extrair as informações que deseja do Traefik e prepará-las para visualizar como gráficos Kibana.
 
 Configurar registros de acesso do Traefik
 
-Os registros de acesso do Traefik contêm informações detalhadas sobre cada solicitação que ele trata. Por padrão, esses logs não estão habilitados. 
+Os registros de acesso do Traefik contêm informações detalhadas sobre cada solicitação que ele trata. 
+Por padrão, esses logs não estão habilitados. 
 Quando eles estão habilitados, o Traefik grava os logs stdoutpor padrão, o que mistura os logs de acesso com os logs de aplicativos gerados pelo Traefik.
 
 Para resolver esse problema, você deve atualizar a implantação para gerar logs /data/access.loge garantir que eles sejam gravados no formato JSON. 
@@ -186,25 +188,6 @@ Esta é a aparência dessa configuração:
   - --providers.kubernetescrd
   - --providers.kubernetesingress
   name: traefik
-```
-Depois que os logs são gravados em um arquivo, eles também devem ser exportados para o Filebeat. Há muitas maneiras de fazer isso. Como você implantou o Filebeat como um DaemonSet, pode adicionar um arquivo secundário simples para seguir no access.log. 
-
-Esta é uma configuração minimalista:
-```sh
-# patch-traefik.yaml
-- args:
-  - /bin/sh
-  - -c
-  - tail -n+1 -F /data/access.log
-  image: busybox
-  imagePullPolicy: Always
-  name: stream-accesslog
-  resources: {}
-  terminationMessagePath: /dev/termination-log
-  terminationMessagePolicy: File
-  volumeMounts:
-  - mountPath: /data
-    name: data
 ```
 Corrija a implantação do Traefik para fazer todas as alterações acima usando o arquivo de configuração fornecido:
 ```sh
