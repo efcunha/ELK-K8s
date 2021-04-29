@@ -58,10 +58,10 @@ NAME                                               PROVISIONER             RECLA
 storageclass.storage.k8s.io/local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  97m
 ```
 A configuração a seguir define Elasticsearch para usar o local-pathStorageClass com os seguintes atributos:
-
+```
 100 MB de tamanho de armazenamento
 Reduzido CPUe memorylimites
-
+```
 ```sh
 # elastic-values.yaml
 # Allocate smaller chunks of memory per pod.
