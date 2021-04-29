@@ -159,6 +159,7 @@ Depois que os pods são criados, você pode acessar o aplicativo com seu navegad
 # Conecte Traefik e Kibana
 
 Agora é hora de vincular Traefik e Kibana para que você possa interpretar os registros do Traefik de uma forma significativa. 
+
 Nessas próximas etapas, você configurará os dois aplicativos para extrair as informações que deseja do Traefik e prepará-las para visualizar como gráficos Kibana.
 
 Configurar registros de acesso do Traefik
@@ -169,29 +170,46 @@ Quando eles estão habilitados, o Traefik grava os logs stdoutpor padrão, o que
 
 Para resolver esse problema, você deve atualizar a implantação para gerar logs /data/access.loge garantir que eles sejam gravados no formato JSON. 
 
+Volte ao projeto https://github.com/efcunha/Traefik-v2.2.git
+
+E altere o arquivo "daemon-set.yaml"
+
 Esta é a aparência dessa configuração:
 
 ```sh
-# patch-traefik.yaml
-- args:
-  - --global.checknewversion
-  - --global.sendanonymoususage
-  - --entryPoints.traefik.address=:9000/tcp
-  - --entryPoints.web.address=:8000/tcp
-  - --entryPoints.websecure.address=:8443/tcp
-  - --api.dashboard=true
-  - --accesslog
-  - --accesslog.format=json
-  - --accesslog.filepath=/data/access.log
-  - --ping=true
-  - --providers.kubernetescrd
-  - --providers.kubernetesingress
-  name: traefik
+        args:
+        # Enable the dashboard without requiring a password. Not recommended
+        # for production.
+        - --api.insecure
+        - --api.dashboard
+        # Specify that we want to use Traefik as an Ingress Controller.
+        - --providers.kubernetesingress
+        # Define two entrypoint ports, and setup a redirect from HTTP to HTTPS.
+        - --entryPoints.web.address=:80
+        - --entryPoints.websecure.address=:443
+        - --entrypoints.web.http.redirections.entryPoint.to=websecure
+        - --entrypoints.web.http.redirections.entryPoint.scheme=https
+        # Enable debug logging. Useful to work out why something might not be
+        # working. Fetch logs of the pod.
+        - --log.level=info
+        # Let's Encrypt Configurtion.
+        - --certificatesresolvers.default.acme.email=<Coloque seu e-mail aqui>
+        - --certificatesresolvers.default.acme.storage=acme.json
+        - --certificatesresolvers.default.acme.tlschallenge
+        # Use the staging ACME server. Uncomment this while testing to prevent
+        # hitting rate limits in production.
+        # Habilitar a linha abaixo somente quando for gerar certificado para produção.
+        #- --certificatesresolvers.default.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+        - --accesslog=true
+        - --log=true
+        - --metrics=true
+        - --metrics.prometheus=true
+        #- --metrics.prometheus.entryPoint="web-secure"    
 ```
 
 Corrija a implantação do Traefik para fazer todas as alterações acima usando o arquivo de configuração fornecido:
 ```sh
-$ kubectl patch deployment traefik -n kube-system --patch-file patch-traefik.yaml
+$ kubectl apply -f daemon-set.yaml
 deployment.apps/traefik patched
 ```
 
