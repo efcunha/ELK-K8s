@@ -223,20 +223,25 @@ Primeiro, abra o menu com três linhas no canto superior esquerdo da tela e esco
 Defina o padrão de índice nomeado filebeat-**para corresponder aos filebeatíndices:
 
 kibana-define-index
+<img width="1000" alt="kibana-define-index" src="https://user-images.githubusercontent.com/52961166/116611264-29222900-a904-11eb-85a7-10b1fc6ffc40.png">
 
-Clique em "Próxima etapa" e selecione @timestampcomo o campo de hora principal no menu suspenso:
+Clique em "Próxima etapa" e selecione @timestamp ![Uploading kibana-define-index.png…]()
+como o campo de hora principal no menu suspenso:
 
 Captura de tela da criação de um padrão de índice em Kibana
+<img width="1000" alt="kibana-create-index" src="https://user-images.githubusercontent.com/52961166/116610787-98e3e400-a903-11eb-95d4-f9576df252c6.png">
 
 Ao clicar em "Criar padrão de índice", a página de resumo do índice mostrará os campos atualizados. Você poderá usar estes campos em consultas Kibana na página do painel:
 
 Captura de tela da página de resumo do padrão de índice Kibana
+<img width="1000" alt="kibana-define-index-timestamp" src="https://user-images.githubusercontent.com/52961166/116610888-b4e78580-a903-11eb-83ba-cff956ab3a22.png">
 
 Agora, se você clicar no menu com três linhas no canto superior esquerdo da tela e escolher Kibana > Discover, deverá ver um gráfico preliminar de todos os logs ingeridos.
 
 Para restringi-los apenas aos úteis, escolha "Adicionar filtro", entre kubernetes.pod.nameno menu suspenso Campo, escolha "é" no menu suspenso Operador e selecione o traefiknome do pod apropriado no menu suspenso "Valor" para veja apenas as entradas de registro criadas por ele:
 
 Captura de tela da página Kibana Discover
+<img width="1000" alt="kibana-index-summary" src="https://user-images.githubusercontent.com/52961166/116610971-cf216380-a903-11eb-99d1-2743b70c8ec9.png">
 
 Nesse estágio, no entanto, se você expandir qualquer campo de mensagem determinado (clicando na seta à esquerda de seu carimbo de data / hora), verá que a entrada de registro JSON é armazenada como um único item message, o que não serve ao propósito de analisar logs do Traefik.
 
