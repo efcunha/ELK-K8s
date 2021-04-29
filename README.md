@@ -23,9 +23,9 @@ Quando combinado com o conjunto de projetos de código aberto conhecido como Ela
 
 - o Traefik torna-se parte de um rico conjunto de ferramentas para análise e visualização de log de rede.
 
-Pré-requisitos
+# Pré-requisitos
 
-O kubectl
+# O kubectl
 
 Ferramenta de linha de comando instalada e configurada para acessar seu cluster. (Se você criou seu cluster usando K3d e as instruções acima, isso já terá sido feito para você.)
 
