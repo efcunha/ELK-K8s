@@ -38,11 +38,11 @@ Configurar Elastic Logging
 O Traefik gera logs de acesso automaticamente, mas na forma bruta eles são de utilidade limitada. 
 Este tutorial demonstra como ingerir esses logs no Elasticsearch para pesquisa e agregação, o que, por sua vez, permitirá que você crie visualizações usando gráficos Kibana.
 
-Isso significa que você deve primeiro implantar Elasticsearch, Kibana e Filebeat em seu cluster, o que pode ser feito usando seus respectivos gráficos Helm.
+Isso significa que você deve primeiro implantar Elasticsearch, Kibana e Filebeat em seu cluster, o que pode ser feito usando seus respectivos comandos Helm.
 
-# Implantar Elastic
+# Implantar Elasticsearch
 
-Adicione e atualize o repositório de gráficos Elastic Helm usando os seguintes comandos:
+Adicione e atualize o repositório de gráficos Elasticsearch Helm usando os seguintes comandos:
 ```sh
 $ helm repo add elastic https://helm.elastic.co
 $ helm repo update
@@ -52,7 +52,10 @@ Hang tight while we grab the latest from your chart repositories...
 Update Complete. ⎈Happy Helming!⎈
 ```
 Elasticsearch requer um volume para armazenar logs. 
-A configuração padrão do Helm especifica um volume de 30 GiB usando standardcomo storageClassName. Infelizmente, embora o standardStorageClass esteja disponível no Google Cloud Platform, ele não está disponível no K3s por padrão. Para encontrar uma alternativa, faça uma pesquisa para determinar qual StorageClass está disponível:
+
+A configuração padrão do Helm especifica um volume de 30 GiB usando standardcomo storageClassName. 
+Infelizmente, embora o standardStorageClass esteja disponível no Google Cloud Platform, ele não está disponível no K3s por padrão. 
+Para encontrar uma alternativa, faça uma pesquisa para determinar qual StorageClass está disponível:
 ```sh
 $ kubectl get storageClass
 NAME                                               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
