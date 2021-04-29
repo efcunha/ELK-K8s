@@ -125,7 +125,8 @@ Para testar a configuração, tente acessar o painel com seu navegador da web em
 
 Implementar Filebeat
 
-Em seguida, implante o Filebeat como um DaemonSet para encaminhar todos os logs para o Elasticsearch. Assim como com os outros componentes, você configurará o Filebeat com os seguintes valores:
+Em seguida, implante o Filebeat como um DaemonSet para encaminhar todos os logs para o Elasticsearch. 
+Assim como com os outros componentes, você configurará o Filebeat com os seguintes valores:
 ```
 100MB tamanho de armazenamento em local-pathStorageClass
 reduzido CPU e memory limites
