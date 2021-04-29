@@ -43,28 +43,26 @@ Isso significa que você deve primeiro implantar Elasticsearch, Kibana e Filebea
 
 Adicione e atualize o repositório de gráficos Elastic Helm usando os seguintes comandos:
 
----
 $ helm repo add elastic https://helm.elastic.co
 $ helm repo update
 Hang tight while we grab the latest from your chart repositories...
 ...Successfully got an update from the "traefik" chart repository
 ...Successfully got an update from the "elastic" chart repository
 Update Complete. ⎈Happy Helming!⎈
----
 
 Elasticsearch requer um volume para armazenar logs. 
 A configuração padrão do Helm especifica um volume de 30 GiB usando standardcomo storageClassName. Infelizmente, embora o standardStorageClass esteja disponível no Google Cloud Platform, ele não está disponível no K3s por padrão. Para encontrar uma alternativa, faça uma pesquisa para determinar qual StorageClass está disponível:
 
----
 $ kubectl get storageClass
 NAME                                               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 storageclass.storage.k8s.io/local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  97m
 
 A configuração a seguir define Elasticsearch para usar o local-pathStorageClass com os seguintes atributos:
----
+
 100 MB de tamanho de armazenamento
 Reduzido CPUe memorylimites
----
+
+---sh
 # elastic-values.yaml
 # Allocate smaller chunks of memory per pod.
 resources:
@@ -86,7 +84,7 @@ volumeClaimTemplate:
 
 Implante o Elasticsearch com a configuração acima usando o Helm:
 
----
+---sh
 $ helm install elasticsearch elastic/elasticsearch -f ./elastic-values.yaml
 NAME: elasticsearch
 LAST DEPLOYED: Sun Jan 10 12:23:30 2021
