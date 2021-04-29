@@ -1,6 +1,6 @@
 # Agregação de Logs para Traefik e Kubernetes com o Elastic Stack
 
-The repository contains configuration for the following components :
+Este repositório contem as configurações dos componentes:
 
  - Elastic
  - Kibana
