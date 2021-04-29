@@ -174,7 +174,7 @@ Volte ao projeto https://github.com/efcunha/Traefik-v2.2.git
 
 E altere o arquivo "daemon-set.yaml"
 
-Esta é a aparência dessa configuração:
+Esta é a aparência da configuração dos args do daemon-set.yaml:
 
 ```sh
         args:
