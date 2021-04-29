@@ -53,7 +53,7 @@ Update Complete. ⎈Happy Helming!⎈
 ```
 Elasticsearch requer um volume para armazenar logs. 
 
-A configuração padrão do Helm especifica um volume de 30 GiB usando standardcomo storageClassName. 
+A configuração padrão do Helm especifica um volume de 30 GiB usando standard como storageClassName. 
 Infelizmente, embora o standardStorageClass esteja disponível no Google Cloud Platform, ele não está disponível no K3s por padrão. 
 Para encontrar uma alternativa, faça uma pesquisa para determinar qual StorageClass está disponível:
 ```sh
@@ -61,29 +61,27 @@ $ kubectl get storageClass
 NAME                                               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 storageclass.storage.k8s.io/local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  97m
 ```
-A configuração a seguir define Elasticsearch para usar o local-pathStorageClass com os seguintes atributos:
-```
-100 MB de tamanho de armazenamento
-Reduzido CPUe memorylimites
-```
+A configuração a seguir define Elasticsearch para usar o local-path StorageClass com os seguintes atributos:
+Caso vc tenha um StorageClass implantado no seu cluster substitua pelo seu storageClassName.
+
 ```sh
 # elastic-values.yaml
 # Allocate smaller chunks of memory per pod.
 resources:
   requests:
-    cpu: "100m"
-    memory: "512M"
+    cpu: "500m"
+    memory: "2048M"
   limits:
-    cpu: "1000m"
-    memory: "512M"
+    cpu: "2000m"
+    memory: "4096M"
 
 # Request smaller persistent volumes.
 volumeClaimTemplate:
   accessModes: [ "ReadWriteOnce" ]
-  storageClassName: "local-path"
+  storageClassName: "local-path" # Adicionar seu storageClassName
   resources:
     requests:
-      storage: 100M
+      storage: 20G
 ```
 Implante o Elasticsearch com a configuração acima usando o Helm:
 ```sh
@@ -104,10 +102,7 @@ Observe que pode levar vários minutos para que os pods do Elasticsearch fiquem 
 # Implantar Kibana
 
 O repositório Elastic também fornece gráficos Helm para Kibana. Assim como no Elasticsearch, você deseja configurar Kibana com os seguintes valores:
-```
-100MB tamanho de armazenamento em local-pathStorageClass
-Reduzido CPU e memory limites
-```
+
 Implante o Kibana com a configuração acima usando o Helm:
 ```sh
 $ helm install kibana elastic/kibana -f ./kibana-values.yaml
@@ -131,10 +126,7 @@ Implementar Filebeat
 
 Em seguida, implante o Filebeat como um DaemonSet para encaminhar todos os logs para o Elasticsearch. 
 Assim como com os outros componentes, você configurará o Filebeat com os seguintes valores:
-```
-100MB tamanho de armazenamento em local-pathStorageClass
-reduzido CPU e memory limites
-```
+
 Implante o Filebeat com as opções de configuração acima usando o Helm:
 ```sh
 $ helm install filebeat elastic/filebeat -f ./filebeat-values.yaml
@@ -178,6 +170,7 @@ Quando eles estão habilitados, o Traefik grava os logs stdoutpor padrão, o que
 Para resolver esse problema, você deve atualizar a implantação para gerar logs /data/access.loge garantir que eles sejam gravados no formato JSON. 
 
 Esta é a aparência dessa configuração:
+
 ```sh
 # patch-traefik.yaml
 - args:
@@ -195,6 +188,7 @@ Esta é a aparência dessa configuração:
   - --providers.kubernetesingress
   name: traefik
 ```
+
 Corrija a implantação do Traefik para fazer todas as alterações acima usando o arquivo de configuração fornecido:
 ```sh
 $ kubectl patch deployment traefik -n kube-system --patch-file patch-traefik.yaml
@@ -203,34 +197,48 @@ deployment.apps/traefik patched
 
 # Painel Kibana
 
-Em seguida, para começar a construir seu painel em Kibana, você precisará configurar os padrões de índice. Você pode fazer isso com as seguintes etapas.
+Em seguida, para começar a construir seu painel em Kibana, você precisará configurar os padrões de índice. 
 
-Primeiro, abra o menu com três linhas no canto superior esquerdo da tela e escolha Kibana > Overview. Na página Visão geral do Kibana , selecione "Adicionar seus dados" e clique em "Criar padrão de índice":
+Você pode fazer isso com as seguintes etapas.
+
+Primeiro, abra o menu com três linhas no canto superior esquerdo da tela e escolha:
+
+Kibana > Overview. 
+
+Na página Visão geral do Kibana:
+
+Selecione "Add your data" e clique em "Create index pattern":
 
 <img width="1000" alt="kibana-create-index" src="https://user-images.githubusercontent.com/52961166/116609901-ead83a00-a902-11eb-9621-19a35d462bf7.png">
 
-Defina o padrão de índice nomeado filebeat-** para corresponder aos filebeat índices:
+Defina o padrão de índice nomeado "filebeat-**" para corresponder aos filebeat "indexes":
 
 <img width="1000" alt="kibana-define-index" src="https://user-images.githubusercontent.com/52961166/116611264-29222900-a904-11eb-85a7-10b1fc6ffc40.png">
 
-Clique em "Próxima etapa" e selecione @timestamp como o campo de hora principal no menu suspenso:
+Clique em "Next step" e selecione "@timestamp" como o campo de hora principal no menu suspenso:
 
 <img width="1000" alt="kibana-define-index-timestamp" src="https://user-images.githubusercontent.com/52961166/116611423-58d13100-a904-11eb-937b-a6ac2372aec5.png">
 
-Ao clicar em "Criar padrão de índice", a página de resumo do índice mostrará os campos atualizados. Você poderá usar estes campos em consultas Kibana na página do painel:
+Ao clicar em "Create index pattern", a página de resumo do índice mostrará os campos atualizados. 
+
+Você poderá usar estes campos em consultas do Kibana na página do painel:
 
 <img width="1000" alt="kibana-index-summary" src="https://user-images.githubusercontent.com/52961166/116611475-671f4d00-a904-11eb-838b-bf66a30ce3fe.png">
 
-Agora, se você clicar no menu com três linhas no canto superior esquerdo da tela e escolher Kibana > Discover, deverá ver um gráfico preliminar de todos os logs ingeridos.
+Agora, se você clicar no menu com três linhas no canto superior esquerdo da tela e escolher:
 
-Para restringi-los apenas aos úteis, escolha "Adicionar filtro", entre kubernetes.pod.nameno menu suspenso Campo, escolha "é" no menu suspenso Operador e selecione o traefiknome do pod apropriado no menu suspenso "Valor" para veja apenas as entradas de registro criadas por ele:
+Kibana > Discover 
+
+Deverá ver um gráfico preliminar de todos os logs ingeridos.
+
+Para restringi-los apenas aos úteis, escolha "Add filter", entre kubernetes.pod.name no menu suspenso Campo, escolha "is" no menu suspenso Operador e selecione o traefik nome do pod apropriado no menu suspenso "Value" para veja apenas as entradas de registro criadas por ele:
 
 <img width="1000" alt="kibana-logs" src="https://user-images.githubusercontent.com/52961166/116611523-7605ff80-a904-11eb-99af-09bd7384f4c8.png">
 
-Nesse estágio, no entanto, se você expandir qualquer campo de mensagem determinado (clicando na seta à esquerda de seu carimbo de data / hora), verá que a entrada de registro JSON é armazenada como um único item message, o que não serve ao propósito de analisar logs do Traefik.
+Nesse estágio, no entanto, se você expandir qualquer campo de mensagem determinado (clicando na seta à esquerda de seu carimbo de data/hora), verá que a entrada de registro JSON é armazenada como um único item message, o que não serve ao propósito de analisar logs do Traefik.
 
-Para corrigir isso, você precisará fazer com que o Filebeat ingira a mensagem completa como campos JSON separados. 
-Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat para usar o decode-jsonprocessador, da seguinte forma:
+Para corrigir isso, você precisará fazer com que o Filebeat ensira a mensagem completa como campos JSON separados. 
+Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat para usar o decode-json processador, da seguinte forma:
 ```sh
 # filebeat-chain-values.yaml
 - decode_json_fields:
@@ -240,7 +248,7 @@ Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat
     target: ""
     overwrite_keys: false
 ```
-Você pode atualizar a cadeia do processador com as opções de configuração acima usando helm upgradeo arquivo de configuração fornecido:
+Você pode atualizar a cadeia do processador com as opções de configuração acima usando helm upgrade o arquivo de configuração fornecido:
 ```sh
 $ helm upgrade filebeat elastic/filebeat -f ./filebeat-chain-values.yaml
 Release "filebeat" has been upgraded. Happy Helming!
@@ -256,25 +264,30 @@ NOTES:
 ```
 
 Agora, os logs no Kibana projetarão cada campo JSON como um campo de consulta separado. 
-Mas ainda há um problema! Você notará triângulos amarelos ao lado dos campos e, ao passar o cursor sobre eles, verá uma mensagem de aviso de que "Não existe mapeamento de cache para o campo":
+Mas ainda há um problema! 
+Você notará triângulos amarelos ao lado dos campos e, ao passar o cursor sobre eles, verá uma mensagem de aviso de que "No Cache mapping exists for the field":
 
 <img width="1000" alt="kibana-traefik-fields" src="https://user-images.githubusercontent.com/52961166/116611598-8f0eb080-a904-11eb-9992-068a58e7d268.png">
 
-Para corrigir isso, volte para filebeat-** a página 
+Para corrigir isso, volte para filebeat-** a "Index summary" da pagina
 
-"Resumo do índice" em Management > Stack Management > Kibana > Index Patterns. 
+Management > Stack Management > Kibana > Index Patterns.
 
 No canto superior esquerdo, ao lado do ícone de lata de lixo vermelho, há um ícone de atualização. 
 
-Clique nele para atualizar a lista de campos.
+Clique nele para atualizar "Click it to refresh" a lista de campos.
 
 <img width="1000" alt="kibana-refresh-index" src="https://user-images.githubusercontent.com/52961166/116611654-a057bd00-a904-11eb-8c85-4d0c8ad8cce6.png">
 
-Como você verá quando retornar à Kibana > Discoverpágina, agora todos os campos de registro gerados pelo Traefik estão disponíveis em Kibana para consulta.
+Como você verá quando retornar à 
+
+Kibana > Discover 
+
+Agora todos os campos de registro gerados pelo Traefik estão disponíveis em Kibana para consulta.
 
 Simular Carga
 
-Os registros não fazem sentido se não tiverem eventos para registrar, então vá em frente e brinque com o serviço HttpBin que você instalou anteriormente, acessando-o httpbin.localhostpara gerar algum tráfego, ou tente executar scripts como estes para acessar o serviço em loops:
+Os registros não fazem sentido se não tiverem eventos para registrar, então vá em frente e brinque com o serviço HttpBin que você instalou anteriormente, acessando-o httpbin.localhost para gerar algum tráfego, ou tente executar scripts como estes para acessar o serviço em loops:
 ```sh
 for ((i=1;i<=10;i++)); do curl -s -X GET "http://localhost/get" -H "accept: application/json" -H "host: httpbin.localhost" > /dev/null; done
 for ((i=1;i<=10;i++)); do curl -s -X POST "http://localhost/post" -H "accept: application/json" -H "host: httpbin.localhost" > /dev/null; done
@@ -283,7 +296,11 @@ for ((i=1;i<=20;i++)); do curl -s -X PATCH "http://localhost/patch" -H "accept: 
 Kibana Charts
 
 Agora você pode começar a criar algumas visualizações. Os registros de acesso gerados pelo Traefik contêm um conjunto diversificado de campos. 
-Para gerar um gráfico do detalhamento da carga geral da solicitação, navegue até Kibana > Visualize, escolha "Criar nova visualização" e clique em "Ir para a lente".
+Para gerar um gráfico do detalhamento da carga geral da solicitação, navegue até 
+
+Kibana > Visualize
+
+Escolha "Create new visualization" e clique em "Go to lens.".
 
 A partir daí, encontre o campo "RequestPath" nas seleções à esquerda e arraste-o para o quadrado no meio da tela. Escolha "Donut" como estilo de gráfico no menu suspenso e você verá um gráfico parecido com este:
 
@@ -291,8 +308,9 @@ A partir daí, encontre o campo "RequestPath" nas seleções à esquerda e arras
 
 Este gráfico mostra todas as solicitações tratadas pelo Traefik. Se quiser restringi-lo, você pode adicionar filtros. 
 
-Por exemplo, escolha "Nome do roteador", selecione "existe" como sua operadora e clique em "Salvar". 
-Em seguida, escolha "RequestHost", selecione "é" como sua operadora, filtre httpbin.localhost no menu suspenso e clique em "Salvar" novamente. 
+Por exemplo, escolha "RouterName", selecione "exists" como sua operadora e clique em "Save". 
+
+Em seguida, escolha "RequestHost", selecione "is" como seu operador, filtre httpbin.localhost no menu suspenso e clique em "Save" novamente. 
 
 Agora seu gráfico será parecido com este:
 
@@ -300,7 +318,7 @@ Agora seu gráfico será parecido com este:
 
 O Traefik também gerou tempos médios de duração para todas as solicitações atendidas pelo aplicativo HttpBin. 
 
-Tente arrastar e soltar o campo "Duração" em seu gráfico e selecionar "Gráfico de Barras" como seu tipo de gráfico:
+Tente arrastar e soltar o campo "Duration" em seu gráfico e selecionar "Bar Graph" como seu tipo de gráfico:
 
 <img width="1000" alt="dashboard-avg-times" src="https://user-images.githubusercontent.com/52961166/116613158-596ac700-a906-11eb-8f51-52b43b4948d7.png">
 
@@ -310,9 +328,6 @@ Este exemplo simples serve para demonstrar como os recursos de registro abrangen
 
 Muitos mais gráficos são possíveis do que os mostrados aqui, então mergulhe e explore.
 
-As futuras parcelas desta série SRE cobrirão como usar outras ferramentas de código aberto para monitorar as métricas do Traefik e rastrear microsserviços, portanto, volte a sintonizar nas próximas semanas.
+E se você quiser se aprofundar em como suas instâncias do Traefik estão operando, verifique o Traefik Pilot , nova plataforma de monitoramento e gerenciamento SaaS.
 
-Como de costume, se você adora o Traefik e há recursos que gostaria de ver em lançamentos futuros, abra uma solicitação de recurso ou entre em contato em nossos fóruns da comunidade . 
-E se você quiser se aprofundar em como suas instâncias do Traefik estão operando, verifique o Traefik Pilot , nossa plataforma de monitoramento e gerenciamento SaaS.
-
-Compartilhar
+Compartilhe
