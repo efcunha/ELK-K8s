@@ -1,0 +1,18 @@
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: kibana
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: default
+spec:
+  rules:
+    - host: kibana.tcemt.tc.br
+      http:
+        paths:
+          - backend:
+              serviceName: kibana-kibana
+              servicePort: 80
