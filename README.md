@@ -100,10 +100,10 @@ Observe que pode levar vários minutos para que os pods do Elasticsearch fiquem 
 # Implantar Kibana
 
 O repositório Elastic também fornece gráficos Helm para Kibana. Assim como no Elasticsearch, você deseja configurar Kibana com os seguintes valores:
-
+```
 100MB tamanho de armazenamento em local-pathStorageClass
 Reduzido CPU e memory limites
-
+```
 Implante o Kibana com a configuração acima usando o Helm:
 ```sh
 $ helm install kibana elastic/kibana -f ./kibana-values.yaml
@@ -126,10 +126,10 @@ Para testar a configuração, tente acessar o painel com seu navegador da web em
 Implementar Filebeat
 
 Em seguida, implante o Filebeat como um DaemonSet para encaminhar todos os logs para o Elasticsearch. Assim como com os outros componentes, você configurará o Filebeat com os seguintes valores:
-
+```
 100MB tamanho de armazenamento em local-pathStorageClass
 reduzido CPU e memory limites
-
+```
 Implante o Filebeat com as opções de configuração acima usando o Helm:
 ```sh
 $ helm install filebeat elastic/filebeat -f ./filebeat-values.yaml
@@ -270,12 +270,13 @@ Mas ainda há um problema! Você notará triângulos amarelos ao lado dos campos
 
 <img width="1000" alt="kibana-traefik-fields" src="https://user-images.githubusercontent.com/52961166/116611598-8f0eb080-a904-11eb-9992-068a58e7d268.png">
 
-Para corrigir isso, volte para filebeat-**
-a página 
+Para corrigir isso, volte para filebeat-** a página 
 
 "Resumo do índice" em Management > Stack Management > Kibana > Index Patterns. 
 
-No canto superior esquerdo, ao lado do ícone de lata de lixo vermelho, há um ícone de atualização. Clique nele para atualizar a lista de campos.
+No canto superior esquerdo, ao lado do ícone de lata de lixo vermelho, há um ícone de atualização. 
+
+Clique nele para atualizar a lista de campos.
 
 <img width="1000" alt="kibana-refresh-index" src="https://user-images.githubusercontent.com/52961166/116611654-a057bd00-a904-11eb-8c85-4d0c8ad8cce6.png">
 
