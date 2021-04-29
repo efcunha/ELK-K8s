@@ -220,7 +220,7 @@ Primeiro, abra o menu com três linhas no canto superior esquerdo da tela e esco
 
 <img width="1000" alt="kibana-create-index" src="https://user-images.githubusercontent.com/52961166/116609901-ead83a00-a902-11eb-9621-19a35d462bf7.png">
 
-Defina o padrão de índice nomeado filebeat-**para corresponder aos filebeatíndices:
+Defina o padrão de índice nomeado filebeat-** para corresponder aos filebeat índices:
 
 <img width="1000" alt="kibana-define-index" src="https://user-images.githubusercontent.com/52961166/116611264-29222900-a904-11eb-85a7-10b1fc6ffc40.png">
 
