@@ -59,6 +59,7 @@ A configuração padrão do Helm especifica um volume de 30 GiB usando standardc
 $ kubectl get storageClass
 NAME                                               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 storageclass.storage.k8s.io/local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  97m
+
 A configuração a seguir define Elasticsearch para usar o local-pathStorageClass com os seguintes atributos:
 ---
 100 MB de tamanho de armazenamento
@@ -128,7 +129,7 @@ ingressroute.traefik.containo.us/kibana created
 
 Para testar a configuração, tente acessar o painel com seu navegador da web em kibana.localhost:
 
-Captura de tela do Elastic Dashboard
+<img width="1000" alt="kibana-1" src="https://user-images.githubusercontent.com/52961166/116609713-b5335100-a902-11eb-9b72-bf34ab7a917e.png">
 
 Implementar Filebeat
 
@@ -165,7 +166,7 @@ ingressroute.traefik.containo.us/httpbin created
 
 Depois que os pods são criados, você pode acessar o aplicativo com seu navegador em httpbin.localhoste tentar algumas solicitações:
 
-Captura de tela do aplicativo HTTPBin
+<img width="1000" alt="httpbin" src="https://user-images.githubusercontent.com/52961166/116609821-d431e300-a902-11eb-8a30-e36afd52a933.png">
 
 # Conecte Traefik e Kibana
 
@@ -228,7 +229,7 @@ Em seguida, para começar a construir seu painel em Kibana, você precisará con
 
 Primeiro, abra o menu com três linhas no canto superior esquerdo da tela e escolha Kibana > Overview. Na página Visão geral do Kibana , selecione "Adicionar seus dados" e clique em "Criar padrão de índice":
 
-Captura de tela da criação de um padrão de índice em Kibana
+<img width="1000" alt="kibana-create-index" src="https://user-images.githubusercontent.com/52961166/116609901-ead83a00-a902-11eb-9621-19a35d462bf7.png">
 
 Defina o padrão de índice nomeado filebeat-**para corresponder aos filebeatíndices:
 
