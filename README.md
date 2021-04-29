@@ -62,7 +62,6 @@ A configuração a seguir define Elasticsearch para usar o local-pathStorageClas
 100 MB de tamanho de armazenamento
 Reduzido CPUe memorylimites
 
----sh
 # elastic-values.yaml
 # Allocate smaller chunks of memory per pod.
 resources:
@@ -80,11 +79,9 @@ volumeClaimTemplate:
   resources:
     requests:
       storage: 100M
----
 
 Implante o Elasticsearch com a configuração acima usando o Helm:
 
----sh
 $ helm install elasticsearch elastic/elasticsearch -f ./elastic-values.yaml
 NAME: elasticsearch
 LAST DEPLOYED: Sun Jan 10 12:23:30 2021
@@ -96,7 +93,6 @@ NOTES:
   $ kubectl get pods --namespace=default -l app=elasticsearch-master -w
 2. Test cluster health using Helm test.
   $ helm test elasticsearch
----
 
 Observe que pode levar vários minutos para que os pods do Elasticsearch fiquem disponíveis, então seja paciente.
 
@@ -109,7 +105,7 @@ Reduzido CPU e memory limites
 
 Implante o Kibana com a configuração acima usando o Helm:
 
----
+
 $ helm install kibana elastic/kibana -f ./kibana-values.yaml
 NAME: kibana
 LAST DEPLOYED: Sun Jan 10 14:50:50 2021
@@ -117,13 +113,11 @@ NAMESPACE: default
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
----
+
 Depois que todos os pods estiverem funcionando, antes de acessar o painel do Elastic, você precisará implantar um IngressRoute para expô-lo em seu cluster:
 
----
 $ kubectl apply -f kibana-ingress.yaml
 ingressroute.traefik.containo.us/kibana created
----
 
 Para testar a configuração, tente acessar o painel com seu navegador da web em kibana.localhost:
 
@@ -137,7 +131,7 @@ Em seguida, implante o Filebeat como um DaemonSet para encaminhar todos os logs 
 reduzido CPU e memory limites
 
 Implante o Filebeat com as opções de configuração acima usando o Helm:
----
+
 $ helm install filebeat elastic/filebeat -f ./filebeat-values.yaml
 NAME: filebeat
 LAST DEPLOYED: Sun Jan 10 16:23:55 2021
@@ -148,19 +142,18 @@ TEST SUITE: None
 NOTES:
 1. Watch all containers come up.
   $ kubectl get pods --namespace=default -l app=filebeat-filebeat -w
----
 
-#Aplicativo de demonstração
+# Aplicativo de demonstração
 
 Finalmente, agora que os componentes do Elastic Stack estão instalados em seu cluster, você precisará de um aplicativo para monitorar. 
 O serviço HttpBin fornece muitos terminais que você pode usar para gerar vários tipos de tráfego, o que pode ser útil para gerar visualizações. 
 Você pode implantar o serviço e o IngressRoute apropriado usando um único arquivo de configuração:
----
+
 $ kubectl apply -f httpbin.yaml
 deployment.apps/httpbin created
 service/httpbin created
 ingressroute.traefik.containo.us/httpbin created
----
+
 
 Depois que os pods são criados, você pode acessar o aplicativo com seu navegador em httpbin.localhoste tentar algumas solicitações:
 
@@ -178,7 +171,6 @@ Quando eles estão habilitados, o Traefik grava os logs stdoutpor padrão, o que
 Para resolver esse problema, você deve atualizar a implantação para gerar logs /data/access.loge garantir que eles sejam gravados no formato JSON. 
 Esta é a aparência dessa configuração:
 
----
 # patch-traefik.yaml
 - args:
   - --global.checknewversion
@@ -194,11 +186,11 @@ Esta é a aparência dessa configuração:
   - --providers.kubernetescrd
   - --providers.kubernetesingress
   name: traefik
----
+
 Depois que os logs são gravados em um arquivo, eles também devem ser exportados para o Filebeat. Há muitas maneiras de fazer isso. Como você implantou o Filebeat como um DaemonSet, pode adicionar um arquivo secundário simples para seguir no access.log. 
 
 Esta é uma configuração minimalista:
----
+
 # patch-traefik.yaml
 - args:
   - /bin/sh
@@ -213,13 +205,12 @@ Esta é uma configuração minimalista:
   volumeMounts:
   - mountPath: /data
     name: data
----
 
 Corrija a implantação do Traefik para fazer todas as alterações acima usando o arquivo de configuração fornecido:
----
+
 $ kubectl patch deployment traefik -n kube-system --patch-file patch-traefik.yaml
 deployment.apps/traefik patched
----
+
 
 # Painel Kibana
 
@@ -251,7 +242,7 @@ Nesse estágio, no entanto, se você expandir qualquer campo de mensagem determi
 
 Para corrigir isso, você precisará fazer com que o Filebeat ingira a mensagem completa como campos JSON separados. 
 Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat para usar o decode-jsonprocessador, da seguinte forma:
----
+
 # filebeat-chain-values.yaml
 - decode_json_fields:
     fields: ["message"]
@@ -259,10 +250,10 @@ Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat
     max_depth: 1
     target: ""
     overwrite_keys: false
----
+
 
 Você pode atualizar a cadeia do processador com as opções de configuração acima usando helm upgradeo arquivo de configuração fornecido:
----
+
 $ helm upgrade filebeat elastic/filebeat -f ./filebeat-chain-values.yaml
 Release "filebeat" has been upgraded. Happy Helming!
 NAME: filebeat
@@ -274,7 +265,7 @@ TEST SUITE: None
 NOTES:
 1. Watch all containers come up.
   $ kubectl get pods --namespace=default -l app=filebeat-filebeat -w
----
+
 
 Agora, os logs no Kibana projetarão cada campo JSON como um campo de consulta separado. 
 Mas ainda há um problema! Você notará triângulos amarelos ao lado dos campos e, ao passar o cursor sobre eles, verá uma mensagem de aviso de que "Não existe mapeamento de cache para o campo":
