@@ -30,9 +30,9 @@ Ferramenta de linha de comando instalada e configurada para acessar seu cluster.
 
 Você também precisará do conjunto de arquivos de configuração que acompanham este artigo, que estão disponíveis no GitHub :
 
-git clone https://github.com/traefik-tech-blog/traefik-sre-logging.git
+git clone https://github.com/efcunha/ELK-K8s.git
 
-Configurar perfilagem elástica
+Configurar Elastic Logging
 
 O Traefik gera logs de acesso automaticamente, mas na forma bruta eles são de utilidade limitada. 
 Este tutorial demonstra como ingerir esses logs no Elasticsearch para pesquisa e agregação, o que, por sua vez, permitirá que você crie visualizações usando gráficos Kibana.
