@@ -1,4 +1,4 @@
-# Agregação de Logs para Traefik e Kubernetes com o Elastic Stack
+# Agregação de Logs para Traefik e Kubernetes com o Elasticsearch Stack
 
 Este repositório contem as configurações dos componentes:
 
