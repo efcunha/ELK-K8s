@@ -152,6 +152,7 @@ NOTES:
 
 Finalmente, agora que os componentes do Elastic Stack estão instalados em seu cluster, você precisará de um aplicativo para monitorar. 
 O serviço HttpBin fornece muitos terminais que você pode usar para gerar vários tipos de tráfego, o que pode ser útil para gerar visualizações. 
+
 Você pode implantar o serviço e o IngressRoute apropriado usando um único arquivo de configuração:
 ```sh
 $ kubectl apply -f httpbin.yaml
@@ -175,6 +176,7 @@ Por padrão, esses logs não estão habilitados.
 Quando eles estão habilitados, o Traefik grava os logs stdoutpor padrão, o que mistura os logs de acesso com os logs de aplicativos gerados pelo Traefik.
 
 Para resolver esse problema, você deve atualizar a implantação para gerar logs /data/access.loge garantir que eles sejam gravados no formato JSON. 
+
 Esta é a aparência dessa configuração:
 ```sh
 # patch-traefik.yaml
