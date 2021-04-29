@@ -131,7 +131,7 @@ Em seguida, implante o Filebeat como um DaemonSet para encaminhar todos os logs 
 reduzido CPU e memory limites
 
 Implante o Filebeat com as opções de configuração acima usando o Helm:
-
+```sh
 $ helm install filebeat elastic/filebeat -f ./filebeat-values.yaml
 NAME: filebeat
 LAST DEPLOYED: Sun Jan 10 16:23:55 2021
@@ -142,19 +142,18 @@ TEST SUITE: None
 NOTES:
 1. Watch all containers come up.
   $ kubectl get pods --namespace=default -l app=filebeat-filebeat -w
-
+```
 # Aplicativo de demonstração
 
 Finalmente, agora que os componentes do Elastic Stack estão instalados em seu cluster, você precisará de um aplicativo para monitorar. 
 O serviço HttpBin fornece muitos terminais que você pode usar para gerar vários tipos de tráfego, o que pode ser útil para gerar visualizações. 
 Você pode implantar o serviço e o IngressRoute apropriado usando um único arquivo de configuração:
-
+```sh
 $ kubectl apply -f httpbin.yaml
 deployment.apps/httpbin created
 service/httpbin created
 ingressroute.traefik.containo.us/httpbin created
-
-
+```
 Depois que os pods são criados, você pode acessar o aplicativo com seu navegador em httpbin.localhoste tentar algumas solicitações:
 
 <img width="1000" alt="httpbin" src="https://user-images.githubusercontent.com/52961166/116609821-d431e300-a902-11eb-8a30-e36afd52a933.png">
@@ -170,7 +169,7 @@ Quando eles estão habilitados, o Traefik grava os logs stdoutpor padrão, o que
 
 Para resolver esse problema, você deve atualizar a implantação para gerar logs /data/access.loge garantir que eles sejam gravados no formato JSON. 
 Esta é a aparência dessa configuração:
-
+```sh
 # patch-traefik.yaml
 - args:
   - --global.checknewversion
@@ -186,11 +185,11 @@ Esta é a aparência dessa configuração:
   - --providers.kubernetescrd
   - --providers.kubernetesingress
   name: traefik
-
+```
 Depois que os logs são gravados em um arquivo, eles também devem ser exportados para o Filebeat. Há muitas maneiras de fazer isso. Como você implantou o Filebeat como um DaemonSet, pode adicionar um arquivo secundário simples para seguir no access.log. 
 
 Esta é uma configuração minimalista:
-
+```sh
 # patch-traefik.yaml
 - args:
   - /bin/sh
@@ -205,12 +204,12 @@ Esta é uma configuração minimalista:
   volumeMounts:
   - mountPath: /data
     name: data
-
+```
 Corrija a implantação do Traefik para fazer todas as alterações acima usando o arquivo de configuração fornecido:
-
+```sh
 $ kubectl patch deployment traefik -n kube-system --patch-file patch-traefik.yaml
 deployment.apps/traefik patched
-
+```
 
 # Painel Kibana
 
@@ -224,15 +223,12 @@ Defina o padrão de índice nomeado filebeat-** para corresponder aos filebeat �
 
 <img width="1000" alt="kibana-define-index" src="https://user-images.githubusercontent.com/52961166/116611264-29222900-a904-11eb-85a7-10b1fc6ffc40.png">
 
-Clique em "Próxima etapa" e selecione @timestamp ![Uploading kibana-define-index.png…]()
-como o campo de hora principal no menu suspenso:
+Clique em "Próxima etapa" e selecione @timestamp como o campo de hora principal no menu suspenso:
 
-Captura de tela da criação de um padrão de índice em Kibana
 <img width="1000" alt="kibana-define-index-timestamp" src="https://user-images.githubusercontent.com/52961166/116611423-58d13100-a904-11eb-937b-a6ac2372aec5.png">
 
 Ao clicar em "Criar padrão de índice", a página de resumo do índice mostrará os campos atualizados. Você poderá usar estes campos em consultas Kibana na página do painel:
 
-Captura de tela da página de resumo do padrão de índice Kibana
 <img width="1000" alt="kibana-index-summary" src="https://user-images.githubusercontent.com/52961166/116611475-671f4d00-a904-11eb-838b-bf66a30ce3fe.png">
 
 Agora, se você clicar no menu com três linhas no canto superior esquerdo da tela e escolher Kibana > Discover, deverá ver um gráfico preliminar de todos os logs ingeridos.
@@ -245,7 +241,7 @@ Nesse estágio, no entanto, se você expandir qualquer campo de mensagem determi
 
 Para corrigir isso, você precisará fazer com que o Filebeat ingira a mensagem completa como campos JSON separados. 
 Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat para usar o decode-jsonprocessador, da seguinte forma:
-
+```sh
 # filebeat-chain-values.yaml
 - decode_json_fields:
     fields: ["message"]
@@ -253,10 +249,9 @@ Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat
     max_depth: 1
     target: ""
     overwrite_keys: false
-
-
+```
 Você pode atualizar a cadeia do processador com as opções de configuração acima usando helm upgradeo arquivo de configuração fornecido:
-
+```sh
 $ helm upgrade filebeat elastic/filebeat -f ./filebeat-chain-values.yaml
 Release "filebeat" has been upgraded. Happy Helming!
 NAME: filebeat
@@ -268,7 +263,7 @@ TEST SUITE: None
 NOTES:
 1. Watch all containers come up.
   $ kubectl get pods --namespace=default -l app=filebeat-filebeat -w
-
+```
 
 Agora, os logs no Kibana projetarão cada campo JSON como um campo de consulta separado. 
 Mas ainda há um problema! Você notará triângulos amarelos ao lado dos campos e, ao passar o cursor sobre eles, verá uma mensagem de aviso de que "Não existe mapeamento de cache para o campo":
@@ -289,11 +284,11 @@ Como você verá quando retornar à Kibana > Discoverpágina, agora todos os cam
 Simular Carga
 
 Os registros não fazem sentido se não tiverem eventos para registrar, então vá em frente e brinque com o serviço HttpBin que você instalou anteriormente, acessando-o httpbin.localhostpara gerar algum tráfego, ou tente executar scripts como estes para acessar o serviço em loops:
-
+```sh
 for ((i=1;i<=10;i++)); do curl -s -X GET "http://localhost/get" -H "accept: application/json" -H "host: httpbin.localhost" > /dev/null; done
 for ((i=1;i<=10;i++)); do curl -s -X POST "http://localhost/post" -H "accept: application/json" -H "host: httpbin.localhost" > /dev/null; done
 for ((i=1;i<=20;i++)); do curl -s -X PATCH "http://localhost/patch" -H "accept: application/json" -H "host: httpbin.localhost" > /dev/null; done
-
+```
 Kibana Charts
 
 Agora você pode começar a criar algumas visualizações. Os registros de acesso gerados pelo Traefik contêm um conjunto diversificado de campos. 
@@ -318,7 +313,7 @@ Tente arrastar e soltar o campo "Duração" em seu gráfico e selecionar "Gráfi
 
 Captura de tela do gráfico de barras Kibana mostrando a duração média da solicitação 
 
-Resumo:
+# Resumo:
 
 Este exemplo simples serve para demonstrar como os recursos de registro abrangentes do Traefik, combinados com o Elastic Stack de código aberto, podem ser uma ferramenta poderosa para visualizar e compreender a integridade e o desempenho dos serviços em execução nos clusters do Kubernetes. 
 
