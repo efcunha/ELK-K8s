@@ -201,6 +201,8 @@ Esta é a aparência da configuração dos args do daemon-set.yaml:
         #- --certificatesresolvers.default.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
         - --accesslog=true
         - --log=true
+        - --accesslog.format=json
+        - --accesslog.filepath=/data/access.log
         - --metrics=true
         - --metrics.prometheus=true
         #- --metrics.prometheus.entryPoint="web-secure"    
