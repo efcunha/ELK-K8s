@@ -16,12 +16,40 @@ esJavaOpts: "-Xmx512m -Xms512m"
 # Allocate smaller chunks of memory per pod.
 resources:
   requests:
-    cpu: "500m"
-    memory: "1024M"
+    cpu: "1000m"
+    memory: "2Gi"
   limits:
-    cpu: "2000m"
-    memory: "2048M"
+    cpu: "1000m"
+    memory: "2Gi"
 
+ # If Pod Security Policy in use it may be required to specify security context as well as service account
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  # readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  loadBalancerIP: ""
+  port: 80
+  nodePort: ""
+  targetPort: 5601
+  labels: {}
+  annotations: {}
+
+readinessProbe:
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 3
+  timeoutSeconds: 5
 
 # Request smaller persistent volumes.
 volumeClaimTemplate:
@@ -29,4 +57,4 @@ volumeClaimTemplate:
   storageClassName: longhorn
   resources:
     requests:
-      storage: 2G
+      storage: 30G

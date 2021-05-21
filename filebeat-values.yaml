@@ -5,15 +5,6 @@ antiAffinity: "soft"
 # Shrink default JVM heap.
 esJavaOpts: "-Xmx128m -Xms128m"
 
-# Allocate smaller chunks of memory per pod.
-resources:
-  requests:
-    cpu: "100m"
-    memory: "512M"
-  limits:
-    cpu: "1000m"
-    memory: "2048M"
-
 # Request smaller persistent volumes.
 volumeClaimTemplate:
   accessModes: [ "ReadWriteOnce" ]
@@ -21,3 +12,44 @@ volumeClaimTemplate:
   resources:
     requests:
       storage: 2G
+
+daemonset:
+  # Include the daemonset
+  enabled: true
+  hostNetworking: false
+  # Allows you to add any config files in /usr/share/filebeat
+  # such as filebeat.yml for daemonset
+  filebeatConfig:
+    filebeat.yml: |
+      filebeat.inputs:
+      - type: container
+        paths:
+          - /var/log/containers/*.log
+        processors:
+        - decode_json_fields:
+            fields: ["message"]
+            process_array: false
+            max_depth: 1
+            target: ""
+            overwrite_keys: false
+        - add_kubernetes_metadata:
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+      output.elasticsearch:
+        host: '${NODE_NAME}'
+        hosts: '${ELASTICSEARCH_HOSTS:elasticsearch-master:9200}'
+
+  # - User that the container will execute as. Typically necessary to run as root (0) in order to properly collect host container logs.
+  # - Whether to execute the Filebeat containers as privileged containers. Typically not necessarily unless running within environments such as OpenShift.
+  securityContext:
+     runAsUser: 0
+     privileged: false
+  resources:
+     requests:
+       cpu: "100m"
+       memory: "100Mi"
+     limits:
+       cpu: "1000m"
+       memory: "200Mi"

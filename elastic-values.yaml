@@ -7,20 +7,64 @@ sysctlInitContainer:
 esConfig:
   elasticsearch.yml: |
     node.store.allow_mmap: false
-# Permit co-located instances for solitary minikube virtual machines.
-antiAffinity: "soft"
 
 # Shrink default JVM heap.
-esJavaOpts: "-Xmx512m -Xms512m"
+esJavaOpts: "-Xmx1g -Xms1g"
 
 # Allocate smaller chunks of memory per pod.
 resources:
   requests:
-    cpu: "500m"
-    memory: "2048M"
+    cpu: "100m"
+    memory: "2Gi"
   limits:
-    cpu: "2000m"
-    memory: "4096M"
+    cpu: "1000m"
+    memory: "2Gi"
+
+# This is the PriorityClass settings as defined in
+# https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
+priorityClassName: ""
+
+# By default this will make sure two pods don't end up on the same node
+# Changing this to a region would allow you to spread pods across regions
+antiAffinityTopologyKey: "kubernetes.io/hostname"
+
+# Hard means that by default pods will only be scheduled if there are enough nodes for them
+# and that they will never end up on the same node. Setting this to soft will do this "best effort"
+antiAffinity: "soft"
+
+# This is the node affinity settings as defined in
+# https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#node-affinity-beta-feature
+nodeAffinity: {}
+
+# The default is to deploy all pods serially. By setting this to parallel all pods are started at
+# the same time when bootstrapping the cluster
+podManagementPolicy: "Parallel"
+
+protocol: http
+httpPort: 9200
+transportPort: 9300
+
+updateStrategy: RollingUpdate
+
+# This is the max unavailable setting for the pod disruption budget
+# The default value of 1 will make sure that kubernetes won't allow more than 1
+# of your pods to be unavailable during maintenance
+maxUnavailable: 1
+
+ # GroupID for the elasticsearch user. The official elastic docker images always have the id of 1000
+fsGroup: 1000
+
+# How long to wait for elasticsearch to stop gracefully
+terminationGracePeriod: 120
+
+sysctlVmMaxMapCount: 262144
+
+readinessProbe:
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 3
+  timeoutSeconds: 5
 
 # Request smaller persistent volumes.
 volumeClaimTemplate:
@@ -28,4 +72,5 @@ volumeClaimTemplate:
   storageClassName: longhorn
   resources:
     requests:
-      storage: 20G
+      storage: 10G
+
