@@ -80,7 +80,7 @@ volumeClaimTemplate:
   storageClassName: "local-path" # Adicionar seu storageClassName
   resources:
     requests:
-      storage: 20G
+      storage: 30G
 ```
 Implante o Elasticsearch com a configuração acima usando o Helm:
 ```sh
