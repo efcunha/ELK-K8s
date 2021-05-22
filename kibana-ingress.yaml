@@ -10,7 +10,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
-    - host: kibana.tcemt.tc.br
+    - host: kibana.<dominio>
       http:
         paths:
           - backend:
