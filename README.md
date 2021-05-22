@@ -64,16 +64,6 @@ A configuração a seguir define Elasticsearch para usar o local-path StorageCla
 Caso vc tenha um StorageClass implantado no seu cluster substitua pelo seu storageClassName.
 
 ```sh
-# elastic-values.yaml
-# Allocate smaller chunks of memory per pod.
-resources:
-  requests:
-    cpu: "500m"
-    memory: "2048M"
-  limits:
-    cpu: "2000m"
-    memory: "4096M"
-
 # Request smaller persistent volumes.
 volumeClaimTemplate:
   accessModes: [ "ReadWriteOnce" ]
