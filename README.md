@@ -64,16 +64,6 @@ A configuração a seguir define Elasticsearch para usar o local-path StorageCla
 Caso vc tenha um StorageClass implantado no seu cluster substitua pelo seu storageClassName.
 
 ```sh
-# elastic-values.yaml
-# Allocate smaller chunks of memory per pod.
-resources:
-  requests:
-    cpu: "500m"
-    memory: "2048M"
-  limits:
-    cpu: "2000m"
-    memory: "4096M"
-
 # Request smaller persistent volumes.
 volumeClaimTemplate:
   accessModes: [ "ReadWriteOnce" ]
@@ -176,36 +166,38 @@ E altere o arquivo "daemon-set.yaml"
 Esta é a aparência da configuração dos args do daemon-set.yaml:
 
 ```sh
-        args:
-        # Enable the dashboard without requiring a password. Not recommended
-        # for production.
-        - --api.insecure
-        - --api.dashboard
-        # Specify that we want to use Traefik as an Ingress Controller.
-        - --providers.kubernetesingress
-        # Define two entrypoint ports, and setup a redirect from HTTP to HTTPS.
-        - --entryPoints.web.address=:80
-        - --entryPoints.websecure.address=:443
-        - --entrypoints.web.http.redirections.entryPoint.to=websecure
-        - --entrypoints.web.http.redirections.entryPoint.scheme=https
-        # Enable debug logging. Useful to work out why something might not be
-        # working. Fetch logs of the pod.
-        - --log.level=info
-        # Let's Encrypt Configurtion.
-        - --certificatesresolvers.default.acme.email=<Coloque seu e-mail aqui>
-        - --certificatesresolvers.default.acme.storage=acme.json
-        - --certificatesresolvers.default.acme.tlschallenge
-        # Use the staging ACME server. Uncomment this while testing to prevent
-        # hitting rate limits in production.
-        # Habilitar a linha abaixo somente quando for gerar certificado para produção.
-        #- --certificatesresolvers.default.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
-        - --accesslog=true
-        - --log=true
-        - --accesslog.format=json
-        - --accesslog.filepath=/data/access.log
-        - --metrics=true
-        - --metrics.prometheus=true
-        #- --metrics.prometheus.entryPoint="web-secure"    
+args:
+# Enable the dashboard without requiring a password. Not recommended
+# for production.
+- --api.insecure
+- --api.dashboard=true
+- --ping=true
+# Specify that we want to use Traefik as an Ingress Controller.
+- --providers.kubernetesingress
+# Define two entrypoint ports, and setup a redirect from HTTP to HTTPS.
+#- --entrypoints.traefik.address=:8080
+- --entryPoints.web.address=:80
+- --entryPoints.websecure.address=:443
+#- --entrypoints.web.http.redirections.entryPoint.to=websecure
+#- --entrypoints.web.http.redirections.entryPoint.scheme=https
+# Enable debug logging. Useful to work out why something might not be
+# working. Fetch logs of the pod.
+# Let's Encrypt Configurtion.
+- --certificatesresolvers.default.acme.email=<Seu E-mail>
+- --certificatesresolvers.default.acme.storage=acme.json
+- --certificatesresolvers.default.acme.tlschallenge
+# Use the staging ACME server. Uncomment this while testing to prevent
+# hitting rate limits in production.
+# Habilitar a linha abaixo somente quando for gerar certificado para produção.
+#- --certificatesresolvers.default.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+#- --certificatesresolvers.default.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
+- --accesslog=true
+- --log=true
+- --accesslog.format=json
+- --accesslog.filepath=/data/access.log
+- --metrics=true
+- --metrics.prometheus=true
+#- --metrics.prometheus.entryPoint="web-secure"    
 ```
 
 Corrija a implantação do Traefik para fazer todas as alterações acima usando o arquivo de configuração fornecido:
