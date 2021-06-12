@@ -44,6 +44,7 @@ Isso significa que você deve primeiro implantar Elasticsearch, Kibana e Filebea
 Adicione e atualize o repositório de gráficos Elasticsearch Helm usando os seguintes comandos:
 ```sh
 helm repo add elastic https://helm.elastic.co
+```sh
 helm repo update
 ```
 ```
