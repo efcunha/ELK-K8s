@@ -7,6 +7,20 @@ sysctlInitContainer:
 esConfig:
   elasticsearch.yml: |
     node.store.allow_mmap: false
+
+# Extras
+extraEnvs:
+  - name: 'ELASTICSEARCH_USERNAME'
+    valueFrom:
+      secretKeyRef:
+        name: elastic-credentials
+        key: username
+  - name: 'ELASTICSEARCH_PASSWORD'
+    valueFrom:
+      secretKeyRef:
+        name: elastic-credentials
+        key: password
+    
 # Permit co-located instances for solitary minikube virtual machines.
 antiAffinity: "soft"
 
@@ -22,7 +36,9 @@ resources:
     cpu: "1000m"
     memory: "2Gi"
 
- # If Pod Security Policy in use it may be required to specify security context as well as service account
+serverHost: "0.0.0.0"
+
+# If Pod Security Policy in use it may be required to specify security context as well as service account
 
 podSecurityContext:
   fsGroup: 1000
@@ -50,11 +66,3 @@ readinessProbe:
   periodSeconds: 10
   successThreshold: 3
   timeoutSeconds: 5
-
-# Request smaller persistent volumes.
-volumeClaimTemplate:
-  accessModes: [ "ReadWriteOnce" ]
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 30G
