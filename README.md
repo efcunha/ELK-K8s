@@ -83,7 +83,7 @@ volumeClaimTemplate:
 ```
 Implante o Elasticsearch com a configuração acima usando o Helm:
 ```sh
-$ helm install elasticsearch elastic/elasticsearch -f ./elastic-values.yaml
+helm install elasticsearch elastic/elasticsearch -f ./elastic-values.yaml
 ```
 ```
 NAME: elasticsearch
