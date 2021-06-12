@@ -64,8 +64,10 @@ kubectl apply -f elastic-credentials.yaml
 A configuração padrão do Helm especifica um volume de 30 GiB usando standard como storageClassName. 
 Infelizmente, embora o standardStorageClass esteja disponível no Google Cloud Platform, ele não está disponível no K3s por padrão. 
 Para encontrar uma alternativa, faça uma pesquisa para determinar qual StorageClass está disponível:
+```sh
+kubectl get storageClass
 ```
-$ kubectl get storageClass
+```
 NAME                                               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 storageclass.storage.k8s.io/local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  97m
 ```
