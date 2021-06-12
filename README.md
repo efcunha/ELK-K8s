@@ -52,6 +52,11 @@ Update Complete. ⎈Happy Helming!⎈
 ```
 Elasticsearch requer um volume para armazenar logs. 
 
+Vamos antes criar um Secrets para conexão entre Elasticsearch / Kibana / Filebeat com ususario e senha.
+
+```sh
+kubectl apply -f elastic-credentials.yaml
+```
 A configuração padrão do Helm especifica um volume de 30 GiB usando standard como storageClassName. 
 Infelizmente, embora o standardStorageClass esteja disponível no Google Cloud Platform, ele não está disponível no K3s por padrão. 
 Para encontrar uma alternativa, faça uma pesquisa para determinar qual StorageClass está disponível:
