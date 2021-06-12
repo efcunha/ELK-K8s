@@ -43,8 +43,8 @@ Isso significa que você deve primeiro implantar Elasticsearch, Kibana e Filebea
 
 Adicione e atualize o repositório de gráficos Elasticsearch Helm usando os seguintes comandos:
 ```sh
-$ helm repo add elastic https://helm.elastic.co
-$ helm repo update
+helm repo add elastic https://helm.elastic.co
+helm repo update
 ```
 ```
 Hang tight while we grab the latest from your chart repositories...
@@ -103,7 +103,7 @@ O repositório Elastic também fornece gráficos Helm para Kibana. Assim como no
 
 Implante o Kibana com a configuração acima usando o Helm:
 ```sh
-$ helm install kibana elastic/kibana -f ./kibana-values.yaml
+helm install kibana elastic/kibana -f ./kibana-values.yaml
 ```
 ```
 NAME: kibana
@@ -115,7 +115,7 @@ TEST SUITE: None
 ```
 Depois que todos os pods estiverem funcionando, antes de acessar o painel do Elastic, você precisará implantar um IngressRoute para expô-lo em seu cluster:
 ```sh
-$ kubectl apply -f kibana-ingress.yaml
+kubectl apply -f kibana-ingress.yaml
 ```
 ```
 ingressroute.traefik.containo.us/kibana created
@@ -131,7 +131,7 @@ Assim como com os outros componentes, você configurará o Filebeat com os segui
 
 Implante o Filebeat com as opções de configuração acima usando o Helm:
 ```sh
-$ helm install filebeat elastic/filebeat -f ./filebeat-values.yaml
+helm install filebeat elastic/filebeat -f ./filebeat-values.yaml
 ```
 ```
 NAME: filebeat
@@ -151,7 +151,7 @@ O serviço HttpBin fornece muitos terminais que você pode usar para gerar vári
 
 Você pode implantar o serviço e o IngressRoute apropriado usando um único arquivo de configuração:
 ```sh
-$ kubectl apply -f httpbin.yaml
+kubectl apply -f httpbin.yaml
 ```
 ```
 deployment.apps/httpbin created
@@ -219,7 +219,7 @@ args:
 
 Corrija a implantação do Traefik para fazer todas as alterações acima usando o arquivo de configuração fornecido:
 ```sh
-$ kubectl apply -f daemon-set.yaml
+kubectl apply -f daemon-set.yaml
 ```
 ```
 deployment.apps/traefik patched
@@ -280,7 +280,7 @@ Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat
 ```
 Você pode atualizar a cadeia do processador com as opções de configuração acima usando helm upgrade o arquivo de configuração fornecido:
 ```sh
-$ helm upgrade filebeat elastic/filebeat -f ./filebeat-chain-values.yaml
+helm upgrade filebeat elastic/filebeat -f ./filebeat-chain-values.yaml
 ```
 ```
 Release "filebeat" has been upgraded. Happy Helming!
