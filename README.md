@@ -52,7 +52,7 @@ Update Complete. ⎈Happy Helming!⎈
 ```
 Elasticsearch requer um volume para armazenar logs. 
 
-Vamos antes criar um Secrets para conexão entre Elasticsearch / Kibana / Filebeat com ususario e senha.
+Vamos antes criar um Secrets para conexão entre Elasticsearch / Kibana / Filebeat com usuario e senha.
 
 ```sh
 kubectl apply -f elastic-credentials.yaml
