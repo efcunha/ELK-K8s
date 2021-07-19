@@ -43,8 +43,12 @@ Isso significa que você deve primeiro implantar Elasticsearch, Kibana e Filebea
 
 Adicione e atualize o repositório de gráficos Elasticsearch Helm usando os seguintes comandos:
 ```sh
-$ helm repo add elastic https://helm.elastic.co
-$ helm repo update
+helm repo add elastic https://helm.elastic.co
+```
+```sh
+helm repo update
+```
+```
 Hang tight while we grab the latest from your chart repositories...
 ...Successfully got an update from the "traefik" chart repository
 ...Successfully got an update from the "elastic" chart repository
@@ -61,14 +65,16 @@ A configuração padrão do Helm especifica um volume de 30 GiB usando standard 
 Infelizmente, embora o standardStorageClass esteja disponível no Google Cloud Platform, ele não está disponível no K3s por padrão. 
 Para encontrar uma alternativa, faça uma pesquisa para determinar qual StorageClass está disponível:
 ```sh
-$ kubectl get storageClass
+kubectl get storageClass
+```
+```
 NAME                                               PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 storageclass.storage.k8s.io/local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  97m
 ```
 A configuração a seguir define Elasticsearch para usar o local-path StorageClass com os seguintes atributos:
 Caso vc tenha um StorageClass implantado no seu cluster substitua pelo seu storageClassName.
 
-```sh
+```
 # Request smaller persistent volumes.
 volumeClaimTemplate:
   accessModes: [ "ReadWriteOnce" ]
@@ -79,7 +85,9 @@ volumeClaimTemplate:
 ```
 Implante o Elasticsearch com a configuração acima usando o Helm:
 ```sh
-$ helm install elasticsearch elastic/elasticsearch -f ./elastic-values.yaml
+helm install elasticsearch elastic/elasticsearch -f ./elastic-values.yaml
+```
+```
 NAME: elasticsearch
 LAST DEPLOYED: Sun Jan 10 12:23:30 2021
 NAMESPACE: default
@@ -99,7 +107,9 @@ O repositório Elastic também fornece gráficos Helm para Kibana. Assim como no
 
 Implante o Kibana com a configuração acima usando o Helm:
 ```sh
-$ helm install kibana elastic/kibana -f ./kibana-values.yaml
+helm install kibana elastic/kibana -f ./kibana-values.yaml
+```
+```
 NAME: kibana
 LAST DEPLOYED: Sun Jan 10 14:50:50 2021
 NAMESPACE: default
@@ -109,7 +119,9 @@ TEST SUITE: None
 ```
 Depois que todos os pods estiverem funcionando, antes de acessar o painel do Elastic, você precisará implantar um IngressRoute para expô-lo em seu cluster:
 ```sh
-$ kubectl apply -f kibana-ingress.yaml
+kubectl apply -f kibana-ingress.yaml
+```
+```
 ingressroute.traefik.containo.us/kibana created
 ```
 Para testar a configuração, tente acessar o painel com seu navegador da web em kibana.localhost:
@@ -123,7 +135,9 @@ Assim como com os outros componentes, você configurará o Filebeat com os segui
 
 Implante o Filebeat com as opções de configuração acima usando o Helm:
 ```sh
-$ helm install filebeat elastic/filebeat -f ./filebeat-values.yaml
+helm install filebeat elastic/filebeat -f ./filebeat-values.yaml
+```
+```
 NAME: filebeat
 LAST DEPLOYED: Sun Jan 10 16:23:55 2021
 NAMESPACE: default
@@ -141,7 +155,9 @@ O serviço HttpBin fornece muitos terminais que você pode usar para gerar vári
 
 Você pode implantar o serviço e o IngressRoute apropriado usando um único arquivo de configuração:
 ```sh
-$ kubectl apply -f httpbin.yaml
+kubectl apply -f httpbin.yaml
+```
+```
 deployment.apps/httpbin created
 service/httpbin created
 ingressroute.traefik.containo.us/httpbin created
@@ -207,7 +223,9 @@ args:
 
 Corrija a implantação do Traefik para fazer todas as alterações acima usando o arquivo de configuração fornecido:
 ```sh
-$ kubectl apply -f daemon-set.yaml
+kubectl apply -f daemon-set.yaml
+```
+```
 deployment.apps/traefik patched
 ```
 
@@ -266,7 +284,9 @@ Há muitas maneiras de fazer isso, mas uma delas é atualizar o plug-in Filebeat
 ```
 Você pode atualizar a cadeia do processador com as opções de configuração acima usando helm upgrade o arquivo de configuração fornecido:
 ```sh
-$ helm upgrade filebeat elastic/filebeat -f ./filebeat-chain-values.yaml
+helm upgrade filebeat elastic/filebeat -f ./filebeat-chain-values.yaml
+```
+```
 Release "filebeat" has been upgraded. Happy Helming!
 NAME: filebeat
 LAST DEPLOYED: Sun Jan 10 18:04:54 2021
